@@ -5,6 +5,13 @@ namespace dotnettalk
 {
     class Program
     {
+
+        protected const string ServiceName = "httpd.service";
+        protected const string HelpText = "Usage:\n" +
+                                          "  help    - display this reference\n" +
+                                          "  status  - display status of the httpd service\n" +
+                                          "  restart - restart the httpd service";
+
         static void Main(string[] args)
         {
             CliAsync().Wait();
@@ -13,12 +20,7 @@ namespace dotnettalk
         static async Task CliAsync()
         {
             string input = "";
-            string serviceName = "httpd.service";
-            string helpText = "Usage:\n" +
-                              "  help    - display this reference\n" +
-                              "  status  - display status of the httpd service\n" +
-                              "  restart - restart the httpd service\n" +
-                              "  quit    - exit the cli interface";
+            string helpText = HelpText + "\n  quit    - exit the cli interface";
 
             Console.WriteLine(helpText);
 
@@ -31,11 +33,11 @@ namespace dotnettalk
                         Console.WriteLine(helpText);
                         break;
                     case "status":
-                        Console.WriteLine(await Systemctl.GetServiceStatus(serviceName));
+                        Console.WriteLine(await Systemctl.GetServiceStatus(ServiceName));
                         break;
                     case "restart":
-                        await Systemctl.RestartService(serviceName);
-                        Console.WriteLine("Restarting " + serviceName);
+                        await Systemctl.RestartService(ServiceName);
+                        Console.WriteLine("Restarting " + ServiceName);
                         break;
                     default:
                         Console.WriteLine("Invalid command. Use `help` for help.");
