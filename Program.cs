@@ -8,6 +8,7 @@ namespace dotnettalk
 {
     class Program
     {
+        protected const string ServiceName = "httpd.service";
         protected const string HelpText = "Usage:\n" +
                                           "  help    - display this reference\n" +
                                           "  status  - display status of the httpd service\n" +
@@ -15,13 +16,14 @@ namespace dotnettalk
 
         static void Main(string[] args)
         {
-            CliAsync();
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseStartup<WebStartup>()
                 .UseUrls("http://localhost:5000")
                 .Build();
-            host.Run();
+            host.RunAsync().ContinueWith(t => PrintException(t.Exception));
+
+            CliAsync().Wait();
         }
 
         public class WebStartup
@@ -30,16 +32,14 @@ namespace dotnettalk
             {
                 app.Run(async context =>
                 {
-                    string serviceName = "httpd.service";
-
                     switch( context.Request.Path )
                     {
                         case "/status":
-                            await context.Response.WriteAsync(await Systemctl.GetServiceStatus(serviceName));
+                            await context.Response.WriteAsync(await Systemctl.GetServiceStatus(ServiceName));
                             break;
                         case "/restart":
-                            await context.Response.WriteAsync("Restarting " + serviceName);
-                            await Systemctl.RestartService(serviceName);
+                            await context.Response.WriteAsync("Restarting " + ServiceName);
+                            await Systemctl.RestartService(ServiceName);
                             break;
                         default:
                             await context.Response.WriteAsync(HelpText);
@@ -52,42 +52,40 @@ namespace dotnettalk
 
         static async Task CliAsync()
         {
-            try
+            await Task.Delay(300);
+            string input = "";
+            string helpText = HelpText + "\n  quit    - exit the cli interface";
+
+            Console.WriteLine(helpText);
+            Console.WriteLine("");
+
+            while( (input = Console.ReadLine()) != "quit" )
             {
-                await Task.Delay(300);
-                string input = "";
-                string serviceName = "httpd.service";
-                string helpText = HelpText + "\n  quit    - exit the cli interface";
-
-                Console.WriteLine(helpText);
-
-                while( (input = Console.ReadLine()) != "quit" )
+                Console.WriteLine("");
+                switch(input)
                 {
-                    Console.WriteLine("");
-                    switch(input)
-                    {
-                        case "help":
-                            Console.WriteLine(helpText);
-                            break;
-                        case "status":
-                            Console.WriteLine(await Systemctl.GetServiceStatus(serviceName));
-                            break;
-                        case "restart":
-                            await Systemctl.RestartService(serviceName);
-                            Console.WriteLine("Restarting " + serviceName);
-                            break;
-                        default:
-                            Console.WriteLine("Invalid command. Use `help` for help.");
-                            break;
-                    }
-                    Console.WriteLine("");
+                    case "help":
+                        Console.WriteLine(helpText);
+                        break;
+                    case "status":
+                        Console.WriteLine(await Systemctl.GetServiceStatus(ServiceName));
+                        break;
+                    case "restart":
+                        await Systemctl.RestartService(ServiceName);
+                        Console.WriteLine("Restarting " + ServiceName);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid command. Use `help` for help.");
+                        break;
                 }
+                Console.WriteLine("");
             }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-            }
+        }
+
+        protected static void PrintException(Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
         }
     }
 }
