@@ -7,21 +7,42 @@ namespace dotnettalk
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hai!");
-            MainAsync().Wait();
+            CliAsync().Wait();
         }
 
-        static async Task MainAsync()
+        static async Task CliAsync()
         {
-            Console.WriteLine("httpd status: ");
-            Console.WriteLine(await Systemctl.GetServiceStatus("httpd.service"));
-            await Systemctl.RestartService("httpd.service");
-            Console.WriteLine(await Systemctl.GetServiceStatus("httpd.service"));
+            string input = "";
+            string serviceName = "httpd.service";
+            string helpText = "Usage:\n" +
+                              "  help    - display this reference\n" +
+                              "  status  - display status of the httpd service\n" +
+                              "  restart - restart the httpd service\n" +
+                              "  quit    - exit the cli interface";
 
-            await Task.Run(() => {
-                Console.WriteLine("Press any key to close the application.");
-                Console.Read();
-            });
+            Console.WriteLine(helpText);
+
+            while( (input = Console.ReadLine()) != "quit" )
+            {
+                Console.WriteLine("");
+                switch(input)
+                {
+                    case "help":
+                        Console.WriteLine(helpText);
+                        break;
+                    case "status":
+                        Console.WriteLine(await Systemctl.GetServiceStatus(serviceName));
+                        break;
+                    case "restart":
+                        await Systemctl.RestartService(serviceName);
+                        Console.WriteLine("Restarting " + serviceName);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid command. Use `help` for help.");
+                        break;
+                }
+                Console.WriteLine("");
+            }
         }
     }
 }
