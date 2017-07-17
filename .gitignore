@@ -1,8 +1,7 @@
 *.userprefs
 
-## Botwinder specific:
-config.json
-project.lock.json
+## project specific
+azureIP
 bin/
 obj/
 
