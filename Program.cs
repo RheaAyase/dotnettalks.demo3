@@ -5,6 +5,11 @@ namespace dotnettalk
 {
     class Program
     {
+        protected const string HelpText = "Usage:\n" +
+                                          "  help    - display this reference\n" +
+                                          "  status  - display status of the httpd service\n" +
+                                          "  restart - restart the httpd service";
+
         static void Main(string[] args)
         {
             CliAsync().Wait();
@@ -14,11 +19,7 @@ namespace dotnettalk
         {
             string input = "";
             string serviceName = "httpd.service";
-            string helpText = "Usage:\n" +
-                              "  help    - display this reference\n" +
-                              "  status  - display status of the httpd service\n" +
-                              "  restart - restart the httpd service\n" +
-                              "  quit    - exit the cli interface";
+            string helpText = HelpText + "\n  quit    - exit the cli interface";
 
             Console.WriteLine(helpText);
 
