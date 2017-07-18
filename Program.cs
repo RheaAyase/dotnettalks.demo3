@@ -30,9 +30,8 @@ namespace dotnettalk
         {
             public void Configure(IApplicationBuilder app)
             {
-                app.Run(async context =>
-                {
-                    switch( context.Request.Path )
+                app.Run(async context => {
+                    switch(context.Request.Path)
                     {
                         case "/status":
                             await context.Response.WriteAsync(await Systemctl.GetServiceStatus(ServiceName));
