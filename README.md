@@ -10,6 +10,7 @@ This demo is built on top of [Tom's DBus library](https://github.com/tmds/Tmds.D
 * `cli-only` branch - contains only the basic _cli_ demo.
 * `web-api` branch - finished demo application with _web api._
 * `dotnettalk.conf` - Apache vhost with simple proxy configuration.
+* `example.service` - An example systemd service.
 
 #### Resources:
 

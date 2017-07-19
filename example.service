@@ -1,0 +1,17 @@
+[Unit]
+Description=Example ASP.NET Core application.
+After=network.target
+
+[Service]
+User=user
+Group=user
+Type=simple
+ExecStartPre=/usr/bin/git pull
+ExecStart=/usr/local/bin/dotnet run
+WorkingDirectory=/home/user/myWebApplication
+TimeoutStopSec=10
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
